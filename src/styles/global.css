@@ -11,6 +11,5 @@ body {
     background-size: cover;
 }
 div#root {
-    
     backdrop-filter: blur(5px); 
 }
