@@ -1,16 +1,42 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { apiService } from '../service/request';
-import { perso } from '../types/types'
+import { objAPI, perso } from '../types/types'
+let randomID = Number((Math.random() * 7438).toFixed(0));
 export const charactersList = createAsyncThunk(
     "", async () => {
-        const response: perso[] =
-            await apiService.get("/characters/random?limit=8")
-            .then((res : any) => {console.log(res); return res })
+      let usedCharacters : any = [];
+      while (usedCharacters.length !== 8) {
+        const response: any =
+            await apiService.get(`/characters/${randomID}`)
+            .then((res : any) => { return res })
             .catch((err : any) => {
                 console.log(err);
             });
-        return response;
+        randomID = Number((Math.random() * 7438).toFixed(0));
+        if (response !== undefined && !usedCharacters.some((perso : any) => perso.name === response.data.name)) { 
+          usedCharacters.push(response.data);
+        }
+      }
+        return usedCharacters;
     }
 );
+interface stateType {
+  characters: perso[]
+}
+const initialState : stateType = {
+  characters: []
+}
+const charactersSlice = createSlice({
+  name: 'users',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(charactersList.fulfilled, (state, action : any) => {
+      state.characters = action.payload;
+    })
+  },
+})
+export default charactersSlice.reducer; 
+
 
 

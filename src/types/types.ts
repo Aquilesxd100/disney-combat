@@ -1,11 +1,14 @@
 export interface characterProfile {
     name: string,
-    picture: string,
+    image: string,
     strength: number,
     dexterity: number,
     vitality: number,
     inteligence: number,
 };
+export interface objAPI {
+    characters: characterProfile[]
+}
 export interface perso {
     films: [],
     shortFilms: [],

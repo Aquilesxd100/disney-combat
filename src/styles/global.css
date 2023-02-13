@@ -1,3 +1,7 @@
+@font-face {
+    font-family: dansdisneyUi;
+    src: url('../fonts/dansdisneyUi.ttf');
+}
 * {
     margin: 0;
     display: border-box;

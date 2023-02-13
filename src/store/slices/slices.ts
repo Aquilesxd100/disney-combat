@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { characterProfile } from '../../types/types';
+import { characterProfile, objAPI } from '../../types/types';
+const initialState:objAPI = {
+  characters: []
+}
 export const cardSlice = createSlice({
     name: 'cardGenerator',
-    initialState: {
-        characters: [{}]
-    },
+    initialState,
     reducers: {
         attributes: (state, action) => {
             let points = {
@@ -32,16 +33,19 @@ export const cardSlice = createSlice({
               }       
               points.random -= 1;
             }
-            state.characters.push({
+              state.characters.push({
                 name: action.payload.name,
-                picture: action.payload.picture,
+                image: action.payload.image,
                 strength: points.strength,
                 dexterity: points.dexterity,
                 vitality: points.vitality,
                 inteligence: points.intelligence
-            });
+            })
         },
+        reset: (state) => {
+          state.characters = [];
+        }
     }
 });
-export const { attributes } = cardSlice.actions;
+export const { attributes, reset } = cardSlice.actions;
 export default cardSlice.reducer; 
