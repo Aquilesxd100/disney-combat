@@ -21,6 +21,15 @@ export const GenerateBtn = styled(Button)(() => ({
   cursor: "pointer",
   marginBottom: "20px",
 })); 
+export const Input = styled('input')(() => ({
+  margin: '10px 10px',
+  width: '50%',
+  padding: "10px 20px",
+  backgroundColor: "#00587a",
+  color: "#fff",
+  fontSize: "20px",
+  textTransform: 'lowercase'
+}));
 // pai dos cardsss todoss //
 export const ContainerStyle = styled('div')(() => ({
   display: "flex",

@@ -33,6 +33,7 @@ export const cardSlice = createSlice({
               }       
               points.random -= 1;
             }
+            if (state.characters.length < 8) {
               state.characters.push({
                 name: action.payload.name,
                 image: action.payload.image,
@@ -41,6 +42,7 @@ export const cardSlice = createSlice({
                 vitality: points.vitality,
                 inteligence: points.intelligence
             })
+            }
         },
         reset: (state) => {
           state.characters = [];
