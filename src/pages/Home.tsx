@@ -4,15 +4,19 @@ import Card from "../components/Card";
 import { charactersList } from "../store/characters";
 /* import { getCharactersList } from "../store/characters"; */
 import { useStoreDispatch } from "../store/configureStore";
+import searchCharacter, { reset2 } from "../store/searchCharacter";
 import { attributes, reset } from '../store/slices/slices';
-import { GenerateBtn, ContainerStyle, Div, Input} from "./homeStyle";
+import { GenerateBtn, ContainerStyle, Div, Input, GenerateBtn2, DivPesquisa} from "./homeStyle";
 function Home() {
   const dispatch = useStoreDispatch();
   const characters : any = useSelector((state : any) => state.setCharacters.characters);
   const charactersProcessed : any = useSelector((state : any) => state.setAttributes.characters);
+  const searchedCharacter : any = useSelector((state : any) => state.setSearch.filteredCharacter);
   const [cardsDisplay, setCardsDisplay] = useState([]);
+
   const [search, setSearch] = useState("");
   let complete = false;
+  let complete2 = false;
 
    useEffect(() => {
     if (complete === false) {
@@ -26,6 +30,21 @@ function Home() {
         if (charactersProcessed.length === 8) {
           setCardsDisplay(charactersProcessed); 
           complete = true;
+        }
+    }
+  },) 
+  useEffect(() => {
+    if (complete2 === false) {
+      let filteredCharacters = characters.map((character : any) => {
+        return ({
+          name: character.name,
+          image: character.imageUrl,
+        })
+      })
+        filteredCharacters.forEach((character : any) => { dispatch(attributes(character)) });
+        if (charactersProcessed.length === 8) {
+          setCardsDisplay(charactersProcessed); 
+          complete2 = true;
         }
     }
   },) 
@@ -67,23 +86,31 @@ function Home() {
     <GenerateBtn onClick={() => { 
         complete = false; 
         dispatch(reset());
-        dispatch(charactersList()); /* generateCards() */
+        dispatch(charactersList());
       }}>
       Gerar Personagens
     </GenerateBtn>
+    <DivPesquisa>
     <Input placeholder="Pesquisar..." onChange={(event) => { 
-        setSearch(event.target.value);
-        console.log(`Pesquisa: ${search}`)
-        cardsDisplay.forEach((ele : any) => console.log(`Cards: ${ele.name}`))
+        setSearch(event.target.value);               
       }} />
+    <GenerateBtn2 onClick={() => { 
+        complete = false; 
+        /* dispatch(reset2()); */
+        dispatch(searchCharacter(search));
+      }}>
+      Pesquisar
+    </GenerateBtn2>
+    </DivPesquisa>
       <ContainerStyle>
         {(cardsDisplay.length !== 0 && search === "") && cardsDisplay.map((card : any) => (
           <Card name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
            /> 
         ))}  
-        {search !== "" && cardsDisplay.filter((character : any) => character.name.toLowerCase().includes(search)).map((card : any) => (
-            <Card name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}/> 
-        ))}
+        {(cardsDisplay.length !== 0 && search !== "") && cardsDisplay.map((card : any) => (
+          <Card name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
+           /> 
+        ))} 
       </ContainerStyle>
     </Div>
   );

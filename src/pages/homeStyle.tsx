@@ -21,6 +21,12 @@ export const GenerateBtn = styled(Button)(() => ({
   cursor: "pointer",
   marginBottom: "20px",
 })); 
+export const DivPesquisa = styled('div')(() => ({
+  display: 'inline-block',
+})); 
+export const GenerateBtn2 = styled(GenerateBtn)(() => ({
+  width: '150px',
+})); 
 export const Input = styled('input')(() => ({
   margin: '10px 10px',
   width: '50%',
