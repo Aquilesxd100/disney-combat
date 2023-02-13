@@ -1,87 +1,69 @@
 import { useEffect, useState } from "react";
 import { useSelector } from 'react-redux';
 import Card from "../components/Card";
-import { charactersList } from "../store/characters";
+import { charactersList, cleanState } from "../store/characters";
 /* import { getCharactersList } from "../store/characters"; */
 import { useStoreDispatch } from "../store/configureStore";
-import searchCharacter, { reset2 } from "../store/searchCharacter";
-import { attributes, reset } from '../store/slices/slices';
+import { attributes, attributesSearch, reset, resetSearchResul } from '../store/slices/slices';
+import { charactersSearch, resetSearch } from "../store/searchCharacter";
 import { GenerateBtn, ContainerStyle, Div, Input, GenerateBtn2, DivPesquisa} from "./homeStyle";
+
 function Home() {
   const dispatch = useStoreDispatch();
   const characters : any = useSelector((state : any) => state.setCharacters.characters);
   const charactersProcessed : any = useSelector((state : any) => state.setAttributes.characters);
   const searchedCharacter : any = useSelector((state : any) => state.setSearch.filteredCharacter);
+  const searchedCharacterProcessed : any = useSelector((state : any) => state.setAttributes.charactersSearched)
   const [cardsDisplay, setCardsDisplay] = useState([]);
 
   const [search, setSearch] = useState("");
   let complete = false;
   let complete2 = false;
-
+    useEffect(() => {
+      if (search === "") {
+        dispatch(cleanState());
+        dispatch(reset());
+        dispatch(resetSearch());
+        dispatch(resetSearchResul());
+      }
+    }, [search])
    useEffect(() => {
-    if (complete === false) {
-      let filteredCharacters = characters.map((character : any) => {
-        return ({
-          name: character.name,
-          image: character.imageUrl,
+    if(characters.length) {
+      if (complete === false) {
+        let filteredCharacters = characters.map((character : any) => {
+          return ({
+            name: character.name,
+            image: character.imageUrl,
+          })
         })
-      })
-        filteredCharacters.forEach((character : any) => { dispatch(attributes(character)) });
-        if (charactersProcessed.length === 8) {
-          setCardsDisplay(charactersProcessed); 
-          complete = true;
-        }
+          filteredCharacters.forEach((character : any) => { dispatch(attributes(character)) });
+          if (charactersProcessed.length === 8) {
+            setCardsDisplay(charactersProcessed);
+            complete = true;
+          }
+      }
     }
-  },) 
+  }, [characters, charactersProcessed]) 
   useEffect(() => {
     if (complete2 === false) {
-      let filteredCharacters = characters.map((character : any) => {
-        return ({
-          name: character.name,
-          image: character.imageUrl,
+      let filteredCharacters = [];
+      if (searchedCharacter.length) {
+        filteredCharacters = searchedCharacter.map((character : any) => {
+          return ({
+            name: character.name,
+            image: character.imageUrl,
+            arraySize: searchedCharacter.length,
+          })
         })
-      })
-        filteredCharacters.forEach((character : any) => { dispatch(attributes(character)) });
-        if (charactersProcessed.length === 8) {
-          setCardsDisplay(charactersProcessed); 
+        filteredCharacters.forEach((character : any) => { dispatch(attributesSearch(character)) });
+      }        
+        if (searchedCharacterProcessed.length !== 0) {
+          setCardsDisplay(searchedCharacterProcessed);
           complete2 = true;
         }
     }
-  },) 
-/*   let complete = true;
-  function generateCards() {
-    if (complete === true) {
-      dispatch(charactersList());
-      if (characters.length !== 8) {
-        let charactersCopy = characters;
-        console.log(charactersCopy);
-        setTimeout(generateCards, 150);
-      }
-      else {
-        setTimeout(configAttributes, 100);
-        complete = false
-      }
-    }
-  }
-  function configAttributes() {
-    let charactersCopy = characters;
-    if (charactersCopy.length === 8) {
-      let filteredCharacters = charactersCopy.map((character : any) => {
-        return ({
-            name: character.name,
-            image: character.imageUrl,
-        })
-      })
-      filteredCharacters.forEach((character : any) => { dispatch(attributes(character)) });
-      setCardsDisplay(charactersProcessed);
-      complete = true;
-    }
-    else {
-      setTimeout(configAttributes, 100);
-    }
-  } */
+  }, [searchedCharacter, searchedCharacterProcessed]) 
   return (
-
     <Div>
     <GenerateBtn onClick={() => { 
         complete = false; 
@@ -95,20 +77,30 @@ function Home() {
         setSearch(event.target.value);               
       }} />
     <GenerateBtn2 onClick={() => { 
-        complete = false; 
-        /* dispatch(reset2()); */
-        dispatch(searchCharacter(search));
+      let whiteSpaces = 0;
+      let searchCopy = search;
+      while (searchCopy.search(" ") !== -1) {
+        let index = searchCopy.search(" ");
+        whiteSpaces = whiteSpaces + 1;
+        searchCopy = searchCopy.substring(0, index) + searchCopy.substring(index + 1, searchCopy.length);
+      }
+        if (search !== "") {
+          complete2 = false; 
+          dispatch(resetSearch());
+          dispatch(resetSearchResul());
+          dispatch(charactersSearch(search));
+        }
       }}>
       Pesquisar
     </GenerateBtn2>
     </DivPesquisa>
       <ContainerStyle>
-        {(cardsDisplay.length !== 0 && search === "") && cardsDisplay.map((card : any) => (
-          <Card name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
+        {(cardsDisplay.length !== 0 && search === "") && cardsDisplay.map((card : any, i) => (
+          <Card key={`${card.name}-${i}`} name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
            /> 
         ))}  
-        {(cardsDisplay.length !== 0 && search !== "") && cardsDisplay.map((card : any) => (
-          <Card name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
+        {(cardsDisplay.length !== 0 && searchedCharacterProcessed.length !== 0) && cardsDisplay.map((card : any, i) => (
+          <Card key={`${card.name}-${i}`} name={card.name} strength={card.strength} dexterity={card.dexterity} inteligence={card.inteligence} vitality={card.vitality} image={card.image}
            /> 
         ))} 
       </ContainerStyle>

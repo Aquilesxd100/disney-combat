@@ -3,7 +3,8 @@ import { apiService } from '../service/request';
 import { objAPI, perso } from '../types/types'
 let randomID = Number((Math.random() * 7438).toFixed(0));
  export const charactersList = createAsyncThunk(
-     "", async () => {
+     "charactersList/get", async (_, {dispatch}) => {
+      dispatch(cleanState());
        let usedCharacters : any = [];
        while (usedCharacters.length !== 8) {
          const response: any =
@@ -20,30 +21,6 @@ let randomID = Number((Math.random() * 7438).toFixed(0));
          return usedCharacters;
      }
  );
-
-/* export const getCharactersList = createAsyncThunk(
-  "characters/getList",
-  async () => {
-    let usedCharacters = [];
-    let randomID = Number((Math.random() * 7438).toFixed(0));
-    while (usedCharacters.length !== 8) {
-      const response = await apiService
-        .get(`/characters/${randomID}`)
-        .then((res) => res)
-        .catch((err) => {
-          console.log(err);
-        });
-      randomID = Number((Math.random() * 7438).toFixed(0));
-      if (
-        response !== undefined &&
-        !usedCharacters.some((perso) => perso.name === response.data.name)
-      ) {
-        usedCharacters.push(response.data);
-      }
-    }
-    return usedCharacters;
-  }
-); */
 interface stateType {
   characters: perso[]
 }
@@ -53,13 +30,16 @@ const initialState : stateType = {
 const charactersSlice = createSlice({
   name: 'users',
   initialState,
-  reducers: {},
+  reducers: {
+    cleanState: () => initialState
+  },
   extraReducers: (builder) => {
     builder.addCase(charactersList.fulfilled, (state, action : any) => {
       state.characters = action.payload;
     })
   },
 })
+export const { cleanState } = charactersSlice.actions;
 export default charactersSlice.reducer; 
 
 
