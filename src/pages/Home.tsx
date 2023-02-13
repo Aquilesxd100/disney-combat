@@ -75,7 +75,7 @@ function Home() {
     <DivPesquisa>
     <Input placeholder="Pesquisar..." onChange={(event) => { 
         setSearch(event.target.value);               
-      }} />
+    }}/>
     <GenerateBtn2 onClick={() => { 
       let whiteSpaces = 0;
       let searchCopy = search;
